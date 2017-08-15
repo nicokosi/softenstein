@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	api := slack.New("YOUR TOKEN HERE")
+	api := slack.New(os.Getenv("SLACK_API_NICOKOSI_TOKEN"))
 	logger := log.New(os.Stdout, "slack-bot: ", log.Lshortfile|log.LstdFlags)
 	slack.SetLogger(logger)
 	api.SetDebug(true)
@@ -27,7 +27,7 @@ func main() {
 			fmt.Println("Infos:", ev.Info)
 			fmt.Println("Connection counter:", ev.ConnectionCount)
 			// Replace #general with your Channel ID
-			rtm.SendMessage(rtm.NewOutgoingMessage("Hello world", "#general"))
+			rtm.SendMessage(rtm.NewOutgoingMessage("Greeting! It's me, Softenstein!", "#sandbox"))
 
 		case *slack.MessageEvent:
 			fmt.Printf("Message: %v\n", ev)
@@ -44,11 +44,6 @@ func main() {
 		case *slack.InvalidAuthEvent:
 			fmt.Printf("Invalid credentials")
 			return
-
-		default:
-
-			// Ignore other events..
-			// fmt.Printf("Unexpected: %v\n", msg.Data)
 		}
 	}
 }
