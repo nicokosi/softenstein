@@ -22,13 +22,18 @@ func main() {
 		switch ev := msg.Data.(type) {
 
 		case *slack.MessageEvent:
-			helloCmd, _ := regexp.MatchString("hello *", ev.Text)
-			if helloCmd {
-				rtm.SendMessage(rtm.NewOutgoingMessage("Namaste", ev.Channel))
+			buildCommand := regexp.MustCompile("build (.*)")
+			buildArgs := buildCommand.FindStringSubmatch(ev.Text)
+			if len(buildArgs) > 1 {
+				rtm.SendMessage(
+					rtm.NewOutgoingMessage(
+						"Going to build\n> " + buildArgs[1],
+						ev.Channel))
 			} else {
-				rtm.SendMessage(rtm.NewOutgoingMessage(
-					"Hmm, I don't know what to do. My supported command is\n> hello <any message>",
-					ev.Channel))
+				rtm.SendMessage(
+					rtm.NewOutgoingMessage(
+						"Hmm, I don't know what to do. My supported command is\n> build <any message>",
+						ev.Channel))
 			}
 		case *slack.RTMError:
 			fmt.Printf("Error: %s\n", ev.Error())
