@@ -20,15 +20,15 @@ func main() {
 
 	for msg := range rtm.IncomingEvents {
 		switch ev := msg.Data.(type) {
-		case *slack.ConnectedEvent:
-			rtm.SendMessage(rtm.NewOutgoingMessage("Greeting! It's me, Softenstein!", "#sandbox"))
 
 		case *slack.MessageEvent:
 			helloCmd, _ := regexp.MatchString("hello *", ev.Text)
-			if (helloCmd) {
-				fmt.Println("Namaste 🙏")
+			if helloCmd {
+				rtm.SendMessage(rtm.NewOutgoingMessage("Namaste", ev.Channel))
 			} else {
-				fmt.Println("Unknown command. Supported command is 'hello <any message>")
+				rtm.SendMessage(rtm.NewOutgoingMessage(
+					"Hmm, I don't know what to do. My supported command is\n> hello <any message>",
+					ev.Channel))
 			}
 		case *slack.RTMError:
 			fmt.Printf("Error: %s\n", ev.Error())
