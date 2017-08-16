@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 
 	"github.com/nlopes/slack"
 )
@@ -12,32 +13,23 @@ func main() {
 	api := slack.New(os.Getenv("SLACK_API_NICOKOSI_TOKEN"))
 	logger := log.New(os.Stdout, "slack-bot: ", log.Lshortfile|log.LstdFlags)
 	slack.SetLogger(logger)
-	api.SetDebug(true)
+	//api.SetDebug(true)
 
 	rtm := api.NewRTM()
 	go rtm.ManageConnection()
 
 	for msg := range rtm.IncomingEvents {
-		fmt.Print("Event Received: ")
 		switch ev := msg.Data.(type) {
-		case *slack.HelloEvent:
-			// Ignore hello
-
 		case *slack.ConnectedEvent:
-			fmt.Println("Infos:", ev.Info)
-			fmt.Println("Connection counter:", ev.ConnectionCount)
-			// Replace #general with your Channel ID
 			rtm.SendMessage(rtm.NewOutgoingMessage("Greeting! It's me, Softenstein!", "#sandbox"))
 
 		case *slack.MessageEvent:
-			fmt.Printf("Message: %v\n", ev)
-
-		case *slack.PresenceChangeEvent:
-			fmt.Printf("Presence Change: %v\n", ev)
-
-		case *slack.LatencyReport:
-			fmt.Printf("Current latency: %v\n", ev.Value)
-
+			helloCmd, _ := regexp.MatchString("hello *", ev.Text)
+			if (helloCmd) {
+				fmt.Println("Namaste 🙏")
+			} else {
+				fmt.Println("Unknown command. Supported command is 'hello <any message>")
+			}
 		case *slack.RTMError:
 			fmt.Printf("Error: %s\n", ev.Error())
 
