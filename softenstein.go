@@ -12,7 +12,7 @@ import (
 
 var rtm *slack.RTM
 func main() {
-	api := slack.New(os.Getenv("SLACK_API_NICOKOSI_TOKEN"))
+	api := slack.New(os.Getenv("SOFTENSTEIN_SLACK_API_TOKEN"))
 	logger := log.New(os.Stdout, "slack-bot: ", log.Lshortfile|log.LstdFlags)
 	slack.SetLogger(logger)
 	//api.SetDebug(true)
