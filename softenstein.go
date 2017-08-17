@@ -10,13 +10,14 @@ import (
 	"fmt"
 )
 
+var rtm *slack.RTM
 func main() {
 	api := slack.New(os.Getenv("SLACK_API_NICOKOSI_TOKEN"))
 	logger := log.New(os.Stdout, "slack-bot: ", log.Lshortfile|log.LstdFlags)
 	slack.SetLogger(logger)
 	//api.SetDebug(true)
 
-	rtm := api.NewRTM()
+	rtm = api.NewRTM()
 	go rtm.ManageConnection()
 	buildCommand := regexp.MustCompile("build (.*)")
 	for msg := range rtm.IncomingEvents {
@@ -24,7 +25,7 @@ func main() {
 		case *slack.MessageEvent:
 			buildArgs := buildCommand.FindStringSubmatch(ev.Text)
 			if len(buildArgs) > 1 {
-				build(rtm, buildArgs, ev.Channel, ev.Timestamp)
+				build(buildArgs, ev.Channel, ev.Timestamp)
 			}
 		case *slack.RTMError:
 			fmt.Printf("Error: %s\n", ev.Error())
@@ -34,14 +35,14 @@ func main() {
 		}
 	}
 }
-func build(rtm *slack.RTM, buildArgs []string, channel string, timestamp string) {
-	sendThreadedMessage(rtm, channel, "Going to build\n> "+buildArgs[1], timestamp)
+func build(buildArgs []string, channel string, timestamp string) {
+	rtm.SendMessage(ThreadedOutgoingMessage(channel, "Going to build\n> "+buildArgs[1], timestamp))
 	time.Sleep(2 * time.Second)
-	sendThreadedMessage(rtm, channel, "Done!", timestamp)
+	rtm.SendMessage(ThreadedOutgoingMessage(channel, "Done!", timestamp))
 	rtm.AddReaction("white_check_mark", slack.NewRefToMessage(channel, timestamp))
 }
-func sendThreadedMessage(rtm *slack.RTM, channel string, text string, timestamp string) {
+func ThreadedOutgoingMessage(channel string, text string, timestamp string) *slack.OutgoingMessage {
 	msg := rtm.NewOutgoingMessage(text, channel)
 	msg.ThreadTimestamp = timestamp
-	rtm.SendMessage(msg)
+	return msg
 }
