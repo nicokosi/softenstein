@@ -51,7 +51,7 @@ func build(args []string) {
 	time.Sleep(2 * time.Second)
 	fmt.Print("Fake build finished ")
 	if len(args) > 0 {
-		fmt.Sprintf("(args=%v)\n", args[1:])
+		fmt.Printf("(args=%v)\n", args[0:])
 	} else {
 		fmt.Println("(no args)")
 	}
@@ -65,7 +65,9 @@ func ThreadedOutgoingMessage(channel string, text string, timestamp string) *sla
 
 func buildServer(w http.ResponseWriter, req *http.Request) {
 	if req.Method == "POST" {
-		build([]string{})
+		req.ParseForm()
+		text := req.Form.Get("text")
+		build([]string{text})
 		io.WriteString(w, "Built!")
 	} else {
 		w.WriteHeader(405)
