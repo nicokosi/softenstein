@@ -5,11 +5,11 @@ import (
 	"os"
 	"regexp"
 
-	"github.com/nlopes/slack"
-	"time"
 	"fmt"
-	"net/http"
+	"github.com/nlopes/slack"
 	"io"
+	"net/http"
+	"time"
 )
 
 var rtm *slack.RTM
