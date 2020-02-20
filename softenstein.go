@@ -1,12 +1,11 @@
 package main
 
 import (
-	"log"
 	"os"
 	"regexp"
 
 	"fmt"
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 	"io"
 	"net/http"
 	"time"
@@ -16,9 +15,6 @@ var rtm *slack.RTM
 
 func main() {
 	api := slack.New(os.Getenv("SOFTENSTEIN_SLACK_API_TOKEN"))
-	logger := log.New(os.Stdout, "slack-bot: ", log.Lshortfile|log.LstdFlags)
-	slack.SetLogger(logger)
-	//api.SetDebug(true)
 
 	http.HandleFunc("/build", buildServer)
 
